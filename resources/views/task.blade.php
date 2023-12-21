@@ -1,3 +1,7 @@
+@extends('dashboard')
+
+
+@section('contenido')
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -71,7 +75,7 @@
                         <td> {{ $dat->name }} </td>
                         <td> {{ $dat->description }} </td>
                         <td> {{ $dat->dateEnd }} </td>
-                        <td> 
+                        <td>
                             <?php
                                 if($dat->status == '1'){
                                     echo('Pendiente');
@@ -102,29 +106,27 @@
             <form action="{{ route('updateTask') }}" method="post">
                 @csrf
                 <div class="mb-3">
-                    <input type="text" class="form-control" name="id" id="idp" value="">
-                </div>                
-                <div class="mb-3">
-                    <input type="text" class="form-control" name="name" id="namet" placeholder="Nombre">
+                    <input type="text" class="form-control" name="id" id="idp" value="" readonly>
                 </div>
                 <div class="mb-3">
-                    <input type="text" class="form-control" name="description" id="descriptiont" placeholder="description">
+                    <input type="text" class="form-control" name="name" id="namet" placeholder="Nombre" readonly>
                 </div>
                 <div class="mb-3">
-                    <input type="date" class="form-control" name="dateEnd" id="dateEndt" placeholder="Fecha fin">
+                    <input type="text" class="form-control" name="description" id="descriptiont" placeholder="description" readonly>
+                </div>
+                <div class="mb-3">
+                    <input type="date" class="form-control" name="dateEnd" id="dateEndt" placeholder="Fecha fin" readonly>
                 </div>
 
                 <div class="mb-3">
-                    <select class="form-control" name="user" id="user">
-                        <option value=""> selecciona un usuario </option>
+                    <select class="form-control" name="userId" id="userId" readonly>
                         @foreach ($users as $user)
                             <option value="{{ $user->id }}"> {{ $user->name }} </option>
                         @endforeach
                     </select>
                 </div>
                 <div class="mb-3">
-                    <select class="form-control" name="project" id="project">
-                        <option value=""> selecciona un projecto </option>
+                    <select class="form-control" name="project" id="project" readonly>
                         @foreach ($projects as $project)
                             <option value="{{ $project->id }}"> {{ $project->title }} </option>
                         @endforeach
@@ -132,13 +134,13 @@
                 </div>
 
                 <div class="mb-3">
-                    <select class="form-control" name="project" id="project">
+                    <select class="form-control" name="status" id="status">
                         <option value=""> selecciona un estado</option>
                         <option value="2">En progreso</option>
                         <option value="3">Completada</option>
                     </select>
                 </div>
-                
+
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary">Editar tarea</button>
@@ -147,7 +149,7 @@
         </div>
         </div>
         <div class="modal-body">
-            
+
 
         </div>
         </div>
@@ -156,7 +158,7 @@
 
 
 </html>
-
+@endsection
 
 <script>
     function editTask(id, name, description, dateEnd, status, userId, project){

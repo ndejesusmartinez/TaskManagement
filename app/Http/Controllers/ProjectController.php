@@ -5,9 +5,17 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Project;
+use JWTAuth;
 
 class ProjectController extends Controller
 {
+    protected $user;
+    public function __construct(Request $request)
+    {
+        $token = $request->header('Authorization');
+        if($token != '')
+            $this->user = JWTAuth::parseToken()->authenticate();
+    }
     public function storage(Request $request)
     {
         try {

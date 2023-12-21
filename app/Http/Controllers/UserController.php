@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -20,6 +21,10 @@ class UserController extends Controller
             }
 
             if(!empty($token)){
+                $user = Auth::user();
+                $token = JWTAuth::fromUser($user);
+                session()->put('token', $token);
+
                 return redirect()->route('dashboard');
             }
 
@@ -71,6 +76,21 @@ class UserController extends Controller
             return response()->json(compact('user', 'token'), 201);
         } catch (\Throwable $th) {
             dd($th->getMessage());
+        }
+    }
+
+    public function logout(Request $request)
+    {
+        $token = session()->get('token');
+        try {
+            JWTAuth::invalidate($token);
+            return redirect()->route('login');
+
+        } catch (JWTException $exception) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: '. $exception->getMessage()
+            ], 500);
         }
     }
 }

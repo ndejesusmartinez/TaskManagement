@@ -1,3 +1,8 @@
+@extends('dashboard')
+
+
+@section('contenido')
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -102,7 +107,7 @@
             <form action="{{ route('updateProject') }}" method="post">
                 @csrf
                 <div class="mb-3">
-                    <input type="text" class="form-control" name="id" id="idp" value="">
+                    <input type="text" class="form-control" name="id" id="idp" value="" readonly>
                 </div>
                 <div class="mb-3">
                     <input type="text" class="form-control" name="title" id="titlep" value="">
@@ -113,7 +118,7 @@
                 <div class="mb-3">
                     <input type="date" class="form-control" name="startDate" id="startDatep" placeholder="Fecha de inicio">
                 </div>
-                
+
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary">Save changes</button>
@@ -123,7 +128,7 @@
         </div>
         </div>
     </div>
-    
+
     </div>
 
         <button type="button" id ="prueba"class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" style="display:none;">
@@ -133,7 +138,7 @@
         <button type="button" id ="prueba2"class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#detailProject" style="display:none;">
             Launch demo modal2
         </button>
-
+@endsection
 </body>
 </html>
 

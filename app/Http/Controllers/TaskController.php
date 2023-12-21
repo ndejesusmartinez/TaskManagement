@@ -81,7 +81,7 @@ class TaskController extends Controller
                 'project' => $request->get('project'),
             ]);
 
-            return response()->json(['data' => $Task], 200);
+            return redirect()->back();
 
         } catch (\Throwable $th) {
             dd($th->getMessage());
