@@ -13,7 +13,7 @@
 2. ejecutar el comando composer install para instalar las dependencias del proyecto.
 3. crear un archivo .env y copiar el contenido del archivo .env.example
 4. ejecutar el comando php artisan migrate 
-5. ejecupar el comando php artisan serve para levantar el servidor
+5. ejecutar el comando php artisan serve para levantar el servidor
 
 
 ## License
