@@ -26,30 +26,25 @@ Route::post('authenticate', [UserController::class, 'authenticate'])->name('auth
 
 
 Route::group(['middleware' => ['jwt.verify']], function() {
-    /*AÑADE AQUI LAS RUTAS QUE QUIERAS PROTEGER CON JWT*/
 
     Route::get('/dashboard', function () { return view('dashboard'); })->name('dashboard');
 
     //Projects
     Route::get('projects', [ProjectController::class, 'listProjects'])->name('listProject');
+    Route::post('registerProject', [ProjectController::class, 'storage'])->name('registerProject');
+    Route::post('updateProject', [ProjectController::class, 'update'])->name('updateProject');
+    Route::post('deleteProject', [ProjectController::class, 'delete'])->name('deleteProject');
 
     //User
     Route::get('logout', [UserController::class, 'logout'])->name('logout');
 
     //Task
     Route::get('task', [TaskController::class, 'listTaks'])->name('listTaks');
+    Route::post('registerTask', [TaskController::class, 'storage'])->name('registerTask');
+    Route::post('updateTask', [TaskController::class, 'update'])->name('updateTask');
     Route::post('taskForProject', [TaskController::class, 'taskForProject'])->name('taskForProject');
+    Route::post('commentTask', [TaskController::class, 'commentTask'])->name('commentTask');
+    Route::post('traceability', [TaskController::class, 'listComment'])->name('traceability');
+    Route::post('deleteTask', [TaskController::class, 'delete'])->name('deleteTask');
+
 });
-
-Route::post('registerProject', [ProjectController::class, 'storage'])->name('registerProject');
-Route::get('readProject/{id}', [ProjectController::class, 'read'])->name('readProject');
-Route::post('updateProject', [ProjectController::class, 'update'])->name('updateProject');
-Route::post('deleteProject', [ProjectController::class, 'delete'])->name('deleteProject');
-
-
-
-Route::post('registerTask', [TaskController::class, 'storage'])->name('registerTask');
-Route::get('readTask/{id}', [TaskController::class, 'read'])->name('readTask');
-Route::post('updateTask', [TaskController::class, 'update'])->name('updateTask');
-Route::delete('deleteTask/{id}', [TaskController::class, 'delete'])->name('deleteTask');
-

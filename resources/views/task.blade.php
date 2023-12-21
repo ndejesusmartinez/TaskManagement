@@ -17,6 +17,24 @@
 </head>
 <body>
     <div class="container">
+    <input type="hidden" name="_token" id="token" value="{{ csrf_token() }}">
+
+    @if(session('error'))
+            <div class="alert alert-danger">
+                <ul>
+                    <li>{{ session('error') }}</li>
+                </ul>
+            </div>
+        @endif
+
+        @if(session('success'))
+            <div class="alert alert-success">
+                <ul>
+                    <li>{{ session('success') }}</li>
+                </ul>
+            </div>
+        @endif
+
         <form action="{{ route('registerTask') }}" method="post">
             @csrf
             <label for="">Crear tarea nueva</label>
@@ -88,11 +106,68 @@
                         </td>
                         <td> {{ $dat->userId }} </td>
                         <td> {{ $dat->project }} </td>
-                        <td> <button onclick="editTask(' {{$dat->id}} ', '{{$dat->name}}', '{{$dat->description}}', '{{$dat->dateEnd}}', '{{$dat->status}}', '{{$dat->userId}}', '{{$dat->project}}');" >Editar</button> <button>Eliminar</button></td>
+                        <td> <button class="btn btn-success" onclick="editTask('{{$dat->id}}', '{{$dat->name}}', '{{$dat->description}}', '{{$dat->dateEnd}}', '{{$dat->status}}', '{{$dat->userId}}', '{{$dat->project}}');" >Editar</button> <button class="btn btn-danger" onclick="deleteTask('{{$dat->id}}')" >Eliminar</button> <button class="btn btn-success" onclick="comments('{{$dat->id}}');">Agregar comentarios</button> <button class="btn btn-secondary" onclick="see('{{$dat->id}}');">Trazabilidad</button></td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
+    </div>
+
+    <div class="modal fade" id="commentsTask" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Trazabilidad y comentarios</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <label for="">Agregar comentarios</label>
+                    <form action="{{ route('commentTask') }}" method="post">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="">Id tarea</label>
+                            <input type="text" class="form-control" name="id" id="idps" value="" readonly>
+                        </div>
+                        <div class="mb-3">
+                        <label for="">Comentario</label>
+                            <input type="text" class="form-control" name="description" id="descriptionp" placeholder="description">
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Guardar comentario</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="traceabilityTask" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Comentarios</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Id tarea</th>
+                                <th scope="col">Autor</th>
+                                <th scope="col">Descripcion comentario</th>
+                                <th scope="col">Fecha de creacion</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableComments"></tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
     </div>
 
 
@@ -155,6 +230,8 @@
         </div>
 
     <button type="button" id ="detail"class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#detailTask" style="display:none;"></button>
+    <button type="button" id ="comments"class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#commentsTask" style="display:none;"></button>
+    <button type="button" id ="traceability"class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#traceabilityTask" style="display:none;"></button>
 
 
 </html>
@@ -179,5 +256,86 @@
 
         let detail = document.getElementById('detail');
         detail.click();
+    }
+
+    function comments(id){
+
+        let idp = document.getElementById('idps');
+        idp.value = id;
+
+        let detail = document.getElementById('comments');
+        detail.click();
+    }
+
+    function validartoken() {
+        token = $('#token').val();
+        return token;
+    }
+
+    function see(id){
+        let idp = document.getElementById('idp');
+        idp.value = id;
+
+        let detail = document.getElementById('traceability');
+        detail.click();
+
+        formData = new FormData();
+        formData.append('id',id);
+        token = validartoken();
+        formData.append('_token',token);
+
+        $.ajax({
+            type:"POST",
+            url:   "{{ route('traceability') }}",
+            data : formData,
+            processData : false,
+            contentType : false,
+            success : function(result, status, xhr){
+                if(result.code == 200){
+                    var html = '';
+                    var i;
+                    var data = result.Comments;
+                    for (i = 0; i < data.length; i++) {
+                    html += '<tr>' +
+                        '<td>' + data[i].idTask + '</td>' +
+                        '<td>' + data[i].name + '</td>' +
+                        '<td>' + data[i].description + '</td>' +
+                        '<td>' + data[i].date + '</td>' +
+                        '</tr>';
+                    }
+                    $('#tableComments').html(html);
+                }else{
+                    alert("error")
+                }
+
+            }
+        });
+    }
+
+    function deleteTask(id) {
+        formData = new FormData();
+        formData.append('id',id);
+        token = validartoken();
+        formData.append('_token',token);
+
+        $.ajax({
+            type:"POST",
+            url:   "{{ route('deleteTask') }}",
+            data : formData,
+            processData : false,
+            contentType : false,
+            success : function(result, status, xhr){
+                if(result.code == 200){
+                    location.reload();
+                    var html = '';
+                    var i;
+                    var data = result.success;
+                    html += '<ul>' +
+                        '<li>' + data + '</li>' +
+                        '</ul>';
+                    }
+                    $('#success').html(html);
+            }
+        });
     }
 </script>

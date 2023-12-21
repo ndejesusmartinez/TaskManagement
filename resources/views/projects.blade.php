@@ -21,6 +21,24 @@
     <div class="container">
     <input type="hidden" name="_token" id="token" value="{{ csrf_token() }}">
 
+        @if(session('error'))
+
+            <div class="alert alert-danger">
+                <ul>
+                    <li>{{ session('error') }}</li>
+                </ul>
+            </div>
+        @endif
+
+        @if(session('success'))
+
+            <div id="success" class="alert alert-success">
+                <ul>
+                    <li>{{ session('success') }}</li>
+                </ul>
+            </div>
+        @endif
+
         <form action="{{ route('registerProject') }}" method="post">
             @csrf
             <label for="">Crear proyecto nuevo</label>
@@ -58,7 +76,7 @@
                         <td> {{ $dat->title }} </td>
                         <td> {{ $dat->startDate }} </td>
                         <td> {{ $dat->description }} </td>
-                        <td> <button onclick="detailProject(' {{$dat->id}} ', '{{$dat->title}}', '{{$dat->startDate}}', '{{$dat->description}}');">Editar proyecto</button> <button onclick="deleteProject(' {{$dat->id}} ');">Eliminar proyecto</button> <button onclick="seeTaks(' {{$dat->id}} ');" >Ver tareas del proyecto</button></td>
+                        <td> <button class="btn btn-success" onclick="detailProject(' {{$dat->id}} ', '{{$dat->title}}', '{{$dat->startDate}}', '{{$dat->description}}');">Editar proyecto</button> <button class="btn btn-danger" onclick="deleteProject(' {{$dat->id}} ');">Eliminar proyecto</button> <button class="btn btn-success" onclick="seeTaks(' {{$dat->id}} ');" >Ver tareas del proyecto</button></td>
                     </tr>
                 @endforeach
             </tbody>
@@ -73,23 +91,18 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-            <table>
+            <table class="table">
                 <thead>
                     <tr>
                         <td>ID</td>
                         <td>Nombre de tarea</td>
                     </tr>
                 </thead>
-                <tbody class ="bodyTable">
-                    <tr>
-
-                    </tr>
-                </tbody>
+                <tbody id ="bodyTable"></tbody>
             </table>
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Save changes</button>
         </div>
         </div>
     </div>
@@ -158,7 +171,14 @@
             success : function(result, status, xhr){
                 if(result.code == 200){
                     location.reload();
-                }
+                    var html = '';
+                    var i;
+                    var data = result.success;
+                    html += '<ul>' +
+                        '<li>' + data + '</li>' +
+                        '</ul>';
+                    }
+                    $('#success').html(html);
             }
         });
     }
@@ -182,9 +202,19 @@
             contentType : false,
             success : function(result, status, xhr){
                 if(result.code == 200){
-                    //console.log(result.data)
                     let button = document.getElementById('prueba');
                     button.click();
+
+                    var html = '';
+                    var i;
+                    var data = result.taskForProject;
+                    for (i = 0; i < data.length; i++) {
+                    html += '<tr>' +
+                        '<td>' + data[i].id + '</td>' +
+                        '<td>' + data[i].name + '</td>' +
+                        '</tr>';
+                    }
+                    $('#bodyTable').html(html);
                 }else{
                     alert("error")
                 }

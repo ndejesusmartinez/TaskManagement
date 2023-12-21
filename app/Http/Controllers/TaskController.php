@@ -7,6 +7,8 @@ use App\Models\Task;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use App\Models\Project;
+use App\Models\Comments;
+use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
@@ -33,14 +35,14 @@ class TaskController extends Controller
             ]);
 
             if(!empty($Task)){
-                return redirect()->back();
+                return redirect()->back()->with('success', 'Registro exitoso');
             }else{
-                dd("error");
+                return redirect()->back()->with('error', 'Errores');
             }
 
 
         } catch (\Throwable $th) {
-            dd($th->getMessage());
+            return redirect()->back()->with('error', $th->getMessage());
         }
     }
 
@@ -81,36 +83,71 @@ class TaskController extends Controller
                 'project' => $request->get('project'),
             ]);
 
-            return redirect()->back();
+            return redirect()->back()->with('success', 'Edición exitosa');
 
         } catch (\Throwable $th) {
-            dd($th->getMessage());
+            return redirect()->back()->with('error', $th->getMessage());
         }
     }
 
-    public function delete(Request $request, $id)
+    public function delete(Request $request)
     {
         try {
-            $Task = Task::find($id);
+            $Task = Task::find($request->id);
             $Task->delete();
 
-            return response()->json(['data' => $Task], 200);
+            return response()->json([
+                'code' => 200,
+                'success' => 'Eliminacion exitosa'
+            ]);
 
         } catch (\Throwable $th) {
-            dd($th->getMessage());
+            return redirect()->back()->with('error', $th->getMessage());
         }
     }
 
     public function taskForProject(Request $request)
     {
         try {
-            $TaskForProject = Task::select()->where('project', $request->id)->get()->toArray();
+            $TaskForProject = Task::select('id','name')->where('project', $request->id)->get()->toArray();
 
             return response()->json([
                 'code' => 200,
-                'data' => $TaskForProject
+                'taskForProject' => $TaskForProject
             ], 200);
 
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', $th->getMessage());
+        }
+    }
+
+    public function commentTask(Request $request)
+    {
+        try {
+            $Comments = Comments::create([
+                'idTask' => $request->get('id'),
+                'description' => $request->get('description'),
+                'date' => now(),
+                'userId' => Auth::user()->id,
+            ]);
+            return redirect()->back()->with('success', 'Comentario agregado correctamente');
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', $th->getMessage());
+        }
+    }
+
+    public function listComment(Request $request)
+    {
+        try {
+            $Comments = Comments::join('users', 'users.id', '=', 'Comments.userId')
+            ->where('idTask', $request->id)
+            ->select('idTask','users.name','description','date')
+            ->get()->toArray();
+
+            return response()->json([
+                'code' => 200,
+                'Comments' => $Comments
+            ], 200);
         } catch (\Throwable $th) {
             dd($th->getMessage());
         }

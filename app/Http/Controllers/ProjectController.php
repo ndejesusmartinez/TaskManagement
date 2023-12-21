@@ -26,7 +26,7 @@ class ProjectController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json($validator->errors()->toJson(), 400);
+                return redirect()->back()->with('error', 'Todos los campos son obligatorios');
             }
 
             $Project = Project::create([
@@ -36,14 +36,12 @@ class ProjectController extends Controller
             ]);
 
             if(!empty($Project)){
-                return redirect()->back();
-            }else{
-                dd("error");
+                return redirect()->back()->with('success', 'Registro exitoso');
             }
 
 
         } catch (\Throwable $th) {
-            dd($th->getMessage());
+            return redirect()->back()->with('error', $th->getMessage());
         }
     }
 
@@ -52,10 +50,9 @@ class ProjectController extends Controller
         try {
             $projects = Project::all();
             return view('projects', ['data' => $projects]);
-            //return response()->json(['data' => $project], 200);
 
         } catch (\Throwable $th) {
-            dd($th->getMessage());
+            return redirect()->back()->with('error', $th->getMessage());
         }
     }
 
@@ -80,10 +77,10 @@ class ProjectController extends Controller
                 'startDate' => $request->get('startDate'),
             ]);
 
-            return redirect()->back();
+            return redirect()->back()->with('success', 'Actualizacion exitosa');
 
         } catch (\Throwable $th) {
-            dd($th->getMessage());
+            return redirect()->back()->with('error', $th->getMessage());
         }
     }
 
@@ -93,14 +90,15 @@ class ProjectController extends Controller
             $project = Project::find($request->id);
             $project->delete();
 
+
             return response()->json([
                 'code' => 200,
-                'msg' => 'exitoso'
+                'success' => 'Eliminacion exitosa'
             ]);
             //return response()->json(['data' => $project], 200);
 
         } catch (\Throwable $th) {
-            dd($th->getMessage());
+            return redirect()->back()->with('error', $th->getMessage());
         }
     }
 }
