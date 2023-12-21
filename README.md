@@ -7,7 +7,7 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
+## Pasos para instalar proyecto
 
 1. ejecutar git clone y la url del repositorio
 2. ejecutar el comando composer install para instalar las dependencias del proyecto.
