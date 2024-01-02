@@ -16,6 +16,10 @@
 5. ejecutar el comando php artisan serve para levantar el servidor
 
 
+## Documentación técnica
+
+[Ver documentación técnica aquí.](/TaskManagement.docx)
+
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
